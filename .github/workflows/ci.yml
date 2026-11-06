@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24
-      - run: node --check scripts/validate.mjs && node --check templates/agent-plugin/agent.mjs
+      - run: node --check scripts/validate.mjs && node --check scripts/publish.mjs && node --check scripts/minisign.mjs && node --check templates/agent-plugin/agent.mjs
       # Downloads every listed artifact, so a hash that does not match its release fails the change.
       - run: node scripts/validate.mjs --artifacts
 
@@ -44,5 +44,6 @@ jobs:
           if [ -n "$unformatted" ]; then echo "$unformatted"; exit 1; fi
       - run: go vet ./...
       - run: go test -count=1 -race ./...
-      # Every source plugin must build and pack for every platform it lists.
-      - run: node scripts/pack-sources.mjs --out "$RUNNER_TEMP/index" --all
+      # Every source plugin must build and pack for every platform it lists,
+      # and merge into a published index without releasing or signing.
+      - run: mkdir "$RUNNER_TEMP/published" && node scripts/publish.mjs --into "$RUNNER_TEMP/published" --dry-run

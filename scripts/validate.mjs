@@ -2,12 +2,17 @@
 // validate.mjs — check index.json and mirrors.json against the marketplace contract.
 // The contract is owned by Coursive's plugin marketplace spec:
 // https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/0025-plugin-marketplace.md
-// Usage: node scripts/validate.mjs [--artifacts]
+// Usage: node scripts/validate.mjs [--artifacts] [--signed <dir>]
 //   --artifacts  also download every artifact and check its size and SHA-256.
+//   --signed     check <dir>/index.json, the published index, instead of this
+//                branch's index.json, and require <dir>/index.json.sig to be
+//                a valid signature by minisign.pub.
 // Zero dependencies; Node >= 18.
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import process from 'node:process';
+import { verifyMinisign } from './minisign.mjs';
 
 const ID = /^[a-z][a-z0-9-]{1,31}$/;
 const RESERVED = new Set(['catalog', 'catalogs', 'install', 'third-party']);
@@ -109,7 +114,17 @@ async function checkArtifact(a) {
   if (createHash('sha256').update(body).digest('hex') !== a.sha256) fail(a.at, 'sha256 does not match the downloaded artifact');
 }
 
-const artifacts = checkIndex(JSON.parse(await readFile('index.json', 'utf8')));
+const signedDir = process.argv.includes('--signed') ? process.argv[process.argv.indexOf('--signed') + 1] : null;
+const indexBytes = await readFile(join(signedDir ?? '.', 'index.json'));
+const index = JSON.parse(indexBytes.toString('utf8'));
+const artifacts = checkIndex(index);
+// Official plugins reach the published index only through the publish workflow.
+if (!signedDir) for (const p of index.plugins ?? []) if (p.official) fail(`index.json ${p.id}`, 'official plugins are published from plugins/, not listed here');
+if (signedDir) {
+  let ok = false;
+  try { ok = verifyMinisign(indexBytes, await readFile(join(signedDir, 'index.json.sig'), 'utf8'), await readFile('minisign.pub', 'utf8')); } catch (e) { fail('index.json.sig', e.message); }
+  if (!ok) fail('index.json.sig', 'missing or not a valid signature of index.json by minisign.pub');
+}
 checkMirrors(JSON.parse(await readFile('mirrors.json', 'utf8')));
 if (process.argv.includes('--artifacts')) for (const a of artifacts) await checkArtifact(a);
 if (errors.length) {

@@ -13,11 +13,11 @@
 </div>
 
 > [!NOTE]
-> The marketplace contract is approved in the Coursive repository as spec 0025. The published index lists no plugins yet; the official plugins in `plugins/` build into a local index with `scripts/pack-sources.mjs`.
+> The marketplace contract is approved in the Coursive repository as spec 0025. Coursive reads the signed index from the [`index`](https://github.com/WALKERKILLER/coursive-plugins/tree/index) branch, which the publish workflow writes after every merge.
 
 ## What Lives Here
 
-- **[index.json](index.json)**: every plugin the Coursive marketplace shows, with its versions, platform artifacts, sizes and SHA-256 hashes. Release builds publish it with an Ed25519 signature that Coursive checks before trusting it.
+- **[index.json](index.json)**: the third-party plugins submitted to the marketplace, with their versions, platform artifacts, sizes and SHA-256 hashes. The publish workflow adds the official plugins, signs the result with the Ed25519 key in [minisign.pub](minisign.pub) and publishes it to the `index` branch; Coursive checks that signature before trusting the index.
 - **[mirrors.json](mirrors.json)**: the GitHub mirrors Coursive may download through. Coursive measures them with a speed test and uses the fastest; a mirror only carries bytes, and every download is checked against the signed index.
 - **[plugins/](plugins/)**: the source of the official plugins, each released as `<id>-v<version>`.
 - **[sdk/provider](sdk/provider)**: the Go SDK that source plugins use to speak the provider protocol.

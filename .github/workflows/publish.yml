@@ -1,0 +1,63 @@
+name: Publish
+
+# Releases every official plugin version the published index does not list
+# yet, merges in the third-party entries of main's index.json, signs the result
+# with INDEX_SIGNING_KEY and pushes index.json and index.json.sig to the
+# `index` branch, which Coursive reads. Published versions never change: bump
+# a plugin's version in its package.json to publish new code.
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "index.json"
+      - "plugins/**"
+      - "scripts/pack-sources.mjs"
+      - "scripts/publish.mjs"
+      - "scripts/minisign.mjs"
+      - ".github/workflows/publish.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: go test -count=1 ./...
+      - name: Check out the published index
+        run: |
+          if git ls-remote --exit-code --heads origin index; then
+            git fetch --depth=1 origin index
+            git worktree add --detach "$RUNNER_TEMP/published" FETCH_HEAD
+          else
+            git worktree add --orphan -b index "$RUNNER_TEMP/published"
+          fi
+      - name: Release new versions and sign the index
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INDEX_SIGNING_KEY: ${{ secrets.INDEX_SIGNING_KEY }}
+        run: node scripts/publish.mjs --into "$RUNNER_TEMP/published"
+      - run: node scripts/validate.mjs --artifacts --signed "$RUNNER_TEMP/published"
+      - name: Push the signed index
+        working-directory: ${{ runner.temp }}/published
+        run: |
+          git add index.json index.json.sig
+          if git diff --cached --quiet; then echo "index unchanged"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore(index): publish and sign the plugin index"
+          git push origin HEAD:refs/heads/index
