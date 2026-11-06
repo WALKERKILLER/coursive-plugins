@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // validate.mjs — check index.json and mirrors.json against the marketplace contract.
 // The contract is owned by Coursive's plugin marketplace spec:
-// https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/draft-plugin-marketplace.md
+// https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/0025-plugin-marketplace.md
 // Usage: node scripts/validate.mjs [--artifacts]
 //   --artifacts  also download every artifact and check its size and SHA-256.
 // Zero dependencies; Node >= 18.
@@ -13,6 +13,9 @@ const ID = /^[a-z][a-z0-9-]{1,31}$/;
 const RESERVED = new Set(['catalog', 'catalogs', 'install', 'third-party']);
 const SEMVER = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/;
 const SHA256 = /^[a-f0-9]{64}$/;
+const ICON = /^[a-z0-9_]{1,40}$/;
+const DATA_ICON = /^data:image\/(png|webp|svg\+xml);base64,[A-Za-z0-9+/]+={0,2}$/;
+const MAX_ICON_CHARS = Math.ceil((256 * 1024) / 3) * 4 + 64;
 const CATEGORIES = new Set(['notes', 'visualize', 'review', 'programming', 'connector', 'tutor', 'assignment', 'source']);
 const KINDS = new Set(['agent', 'skills', 'views', 'actions', 'sources']);
 const PLATFORMS = new Set(['any', 'linux-x64', 'linux-arm64', 'windows-x64', 'macos-arm64', 'macos-x64']);
@@ -43,6 +46,9 @@ function checkIndex(index) {
     if (!plugin.title || plugin.title.length > 40) fail(where, 'title is required, at most 40 characters');
     if (!plugin.summary || plugin.summary.length > 120) fail(where, 'summary is required, at most 120 characters');
     if (!plugin.author) fail(where, 'author is required');
+    if (plugin.icon !== undefined && !ICON.test(plugin.icon) && !(DATA_ICON.test(plugin.icon) && plugin.icon.length <= MAX_ICON_CHARS)) {
+      fail(where, 'icon must be a Material Symbols name or a base64 PNG, WebP or SVG data: URL of at most 256 KiB');
+    }
     if (!/^https:\/\//.test(plugin.homepage ?? '')) fail(where, 'homepage must be an HTTPS URL');
     for (const c of plugin.categories ?? []) if (!CATEGORIES.has(c)) fail(where, `unknown category ${c}`);
     if (!plugin.kinds?.length || plugin.kinds.some((k) => !KINDS.has(k))) fail(where, `kinds must be a non-empty subset of ${[...KINDS].join(', ')}`);

@@ -1,6 +1,6 @@
 # Contributing
 
-This repository holds the Coursive plugin index, the mirror list and the official plugins. The formats are defined by the [marketplace contract](https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/draft-plugin-marketplace.md) and the [source-provider contract](https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/draft-source-provider-plugins.md) in the Coursive repository; a format change starts there, not here.
+This repository holds the Coursive plugin index, the mirror list and the official plugins. The formats are defined by the [marketplace contract](https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/0025-plugin-marketplace.md) and the [source-provider contract](https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/0024-source-provider-plugins.md) in the Coursive repository; a format change starts there, not here.
 
 ## Submitting a plugin
 
