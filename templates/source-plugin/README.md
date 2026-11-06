@@ -1,11 +1,12 @@
 # Source plugin template
 
-A source plugin connects Coursive to an external course platform. It ships a native provider executable per platform that speaks the protocol in the [source-provider contract](https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/draft-source-provider-plugins.md): JSON-RPC 2.0, one message per line, over stdin and stdout.
+A source plugin connects Coursive to an external course platform. It ships a native provider executable per platform that speaks the protocol in the [source-provider contract](https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/0024-source-provider-plugins.md): JSON-RPC 2.0, one message per line, over stdin and stdout.
 
 ## Layout
 
 ```text
 package.json            # coursive manifest with contributes.sources and the "source" permission
+icon.svg                # optional: the plugin's icon (PNG, WebP or SVG, at most 256 KiB)
 bin/
 ├── provider-linux-x64
 ├── provider-linux-arm64
@@ -15,6 +16,10 @@ bin/
 ```
 
 `manifest.example.json` shows the `coursive` manifest of a source plugin.
+
+## Icon
+
+`coursive.icon` is either a [Material Symbols](https://fonts.google.com/icons) name, such as `cloud_download`, or the path of an image inside the package, such as `icon.svg`. Coursive shows an image on a white tile, so a logo keeps its colors in light and dark themes; prefer a square image with a transparent background. An institution's emblem is usually a trademark: state its source and terms in a `NOTICE` file next to it.
 
 ## Rules for providers
 

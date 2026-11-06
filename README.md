@@ -8,18 +8,19 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-2f7cf6.svg)](LICENSE)
 [![Index schema](https://img.shields.io/badge/index%20schema-v1-44adfe.svg)](index.json)
 
-*[简体中文](README.zh-CN.md) · [Marketplace contract](https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/draft-plugin-marketplace.md) · [Source-provider contract](https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/draft-source-provider-plugins.md) · [Contributing](CONTRIBUTING.md)*
+*[简体中文](README.zh-CN.md) · [Marketplace contract](https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/0025-plugin-marketplace.md) · [Source-provider contract](https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/0024-source-provider-plugins.md) · [Contributing](CONTRIBUTING.md)*
 
 </div>
 
 > [!NOTE]
-> The marketplace contract is a Draft in the Coursive repository. The formats here track it and may change until it is approved; the index lists no plugins yet.
+> The marketplace contract is approved in the Coursive repository as spec 0025. The published index lists no plugins yet; the official plugins in `plugins/` build into a local index with `scripts/pack-sources.mjs`.
 
 ## What Lives Here
 
 - **[index.json](index.json)**: every plugin the Coursive marketplace shows, with its versions, platform artifacts, sizes and SHA-256 hashes. Release builds publish it with an Ed25519 signature that Coursive checks before trusting it.
 - **[mirrors.json](mirrors.json)**: the GitHub mirrors Coursive may download through. Coursive measures them with a speed test and uses the fastest; a mirror only carries bytes, and every download is checked against the signed index.
 - **[plugins/](plugins/)**: the source of the official plugins, each released as `<id>-v<version>`.
+- **[sdk/provider](sdk/provider)**: the Go SDK that source plugins use to speak the provider protocol.
 - **[templates/](templates/)**: starting points for an agent plugin and a source plugin.
 - **[scripts/validate.mjs](scripts/validate.mjs)**: the checks CI runs on every change.
 
