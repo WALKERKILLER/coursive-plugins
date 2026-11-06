@@ -1,0 +1,7 @@
+icon.svg is the Fudan University emblem from Wikimedia Commons
+(https://commons.wikimedia.org/wiki/File:Fudan_University_Logo.svg).
+Original by Fudan University; vector by Prcmise. The file is in the public
+domain there, but the emblem is a trademark of Fudan University. It is used
+only to identify this plugin, which connects to the university's own
+services; it does not imply endorsement. Its single CSS class was inlined as
+a fill attribute so that SVG renderers without CSS draw it.
