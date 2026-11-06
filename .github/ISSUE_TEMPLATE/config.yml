@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a vulnerability
+    url: https://github.com/WALKERKILLER/coursive-plugins/security/advisories/new
+    about: Report security issues privately, never in a public issue.
+  - name: Coursive app issues
+    url: https://github.com/WALKERKILLER/Coursive/issues
+    about: Bugs and ideas for the app itself belong in the Coursive repository.

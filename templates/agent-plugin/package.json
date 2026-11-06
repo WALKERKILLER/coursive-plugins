@@ -1,0 +1,27 @@
+{
+  "name": "coursive-plugin-example",
+  "version": "0.1.0",
+  "description": "An example Coursive agent plugin",
+  "license": "MIT",
+  "type": "module",
+  "coursive": {
+    "id": "example",
+    "title": "Plain words",
+    "summary": "While on, the assistant explains every concept in plain words first",
+    "icon": "extension",
+    "categories": ["tutor"],
+    "engine": "^2.0.0",
+    "agent": "./agent.mjs",
+    "permissions": [],
+    "settings": {
+      "type": "object",
+      "properties": {
+        "analogy": { "type": "boolean", "title": "Add an everyday analogy", "default": true }
+      }
+    },
+    "examples": ["Explain this lecture's main theorem"],
+    "contributes": {
+      "actions": [{ "id": "toggle", "title": "Plain words", "icon": "extension", "surface": "composer.plus", "action": "toggle" }]
+    }
+  }
+}

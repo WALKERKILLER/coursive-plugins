@@ -1,0 +1,28 @@
+name: Mirror report
+description: Report a broken mirror or propose a new one
+labels: ["mirrors"]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Report type
+      options:
+        - A listed mirror is broken or slow
+        - A listed mirror altered content
+        - Propose a new mirror
+    validations:
+      required: true
+  - type: input
+    id: mirror
+    attributes:
+      label: Mirror
+      description: The mirror's id from mirrors.json, or the URL template of a proposed mirror.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: The public GitHub URL you fetched, the time, and what happened (HTTP status, time taken, or the hash you got). Do not include tokens or private URLs.
+    validations:
+      required: true

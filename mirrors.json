@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "checked": "2026-11-06",
+  "mirrors": [
+    { "id": "direct", "name": "GitHub", "template": "{url}", "kinds": ["raw", "release", "archive"] },
+    { "id": "gh-proxy", "name": "gh-proxy.com", "template": "https://gh-proxy.com/{url}", "kinds": ["raw", "release", "archive"] },
+    { "id": "ghfast", "name": "ghfast.top", "template": "https://ghfast.top/{url}", "kinds": ["raw", "release", "archive"] },
+    { "id": "jsdelivr", "name": "jsDelivr", "template": "https://cdn.jsdelivr.net/gh/{owner}/{repo}@{ref}/{file}", "kinds": ["raw"] },
+    { "id": "gh-llkk", "name": "gh.llkk.cc", "template": "https://gh.llkk.cc/{url}", "kinds": ["raw", "release", "archive"] },
+    { "id": "ghproxy-net", "name": "ghproxy.net", "template": "https://ghproxy.net/{url}", "kinds": ["raw", "archive"] }
+  ]
+}
