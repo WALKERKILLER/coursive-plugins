@@ -13,11 +13,11 @@
 </div>
 
 > [!NOTE]
-> 插件市场契约已在 Coursive 仓库中批准，编号为 0025。已发布的索引中暂时没有插件；`plugins/` 中的官方插件可用 `scripts/pack-sources.mjs` 构建为本地索引。
+> 插件市场契约已在 Coursive 仓库中批准，编号为 0025。Coursive 从 [`index`](https://github.com/WALKERKILLER/coursive-plugins/tree/index) 分支读取签名索引，每次合并后由发布工作流写入。
 
 ## 仓库内容
 
-- **[index.json](index.json)**：Coursive 插件市场展示的全部插件，包括版本、各平台的安装包、大小和 SHA-256 哈希。发布时会附带 Ed25519 签名，Coursive 验证签名后才信任索引。
+- **[index.json](index.json)**：提交到插件市场的第三方插件，包括版本、各平台的安装包、大小和 SHA-256 哈希。发布工作流会加入官方插件，用 [minisign.pub](minisign.pub) 对应的 Ed25519 密钥签名，再发布到 `index` 分支；Coursive 验证签名后才信任索引。
 - **[mirrors.json](mirrors.json)**：Coursive 可以使用的 GitHub 镜像。Coursive 会测速并选择最快的镜像。镜像只负责传输，每次下载都会对照签名索引校验。
 - **[plugins/](plugins/)**：官方插件的源代码，每个版本以 `<id>-v<version>` 发布。
 - **[sdk/provider](sdk/provider)**：来源插件实现提供者协议所用的 Go SDK。

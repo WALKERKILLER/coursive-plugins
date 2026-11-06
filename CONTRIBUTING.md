@@ -19,9 +19,11 @@ A submission is accepted when:
 
 Updates add a new entry to the plugin's `versions`; existing versions and their hashes are never edited. A maintainer may remove a plugin that breaks these rules.
 
+After your pull request is merged, the publish workflow signs the index and publishes it to the `index` branch, which Coursive reads.
+
 ## Official plugins
 
-Official plugins live under [plugins/](plugins/), one directory per plugin, and are released from this repository as `<id>-v<version>`. Only entries released from this repository may set `"official": true`.
+Official plugins live under [plugins/](plugins/), one directory per plugin. The publish workflow releases each new version as `<id>-v<version>` and adds it to the signed index; `main`'s `index.json` never lists them. Only entries released from this repository may set `"official": true`.
 
 ## Mirrors
 

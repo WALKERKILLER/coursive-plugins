@@ -4,16 +4,18 @@ This repository publishes the Coursive plugin index (`index.json`), the mirror l
 
 ## Commands
 
-- Validate: `node scripts/validate.mjs` (add `--artifacts` to download and verify every artifact).
+- Validate: `node scripts/validate.mjs` (add `--artifacts` to download and verify every artifact, `--signed <dir>` to check a published index and its signature).
 - Go code (`sdk/`, `internal/`, source plugins): `go vet ./...` and `go test ./...`; build a provider with `CGO_ENABLED=0 go build -trimpath -o plugins/<id>/bin/provider-<platform> ./plugins/<id>`.
 - Pack source plugins: `node scripts/pack-sources.mjs --out <dir>` writes one `.tgz` per platform and an `index.json` (`--all` for every platform, `--release` for GitHub release URLs).
+- Publish: `.github/workflows/publish.yml` runs `node scripts/publish.mjs --into <dir>` after every merge to `main`. It releases each official plugin version not yet published, merges in the third-party entries of `main`'s `index.json`, signs the result with the key in `minisign.pub` and pushes `index.json` and `index.json.sig` to the `index` branch. Locally, use only `--dry-run`.
 
 Run validation before every commit; CI runs it on every push and pull request, together with `gofmt`, `go vet`, `go test -race` and a pack of every source plugin for every platform.
 
 ## Rules
 
 - Never edit a published version's entry or hash; add a new version instead.
-- Only plugins released from this repository may be marked `"official": true`.
+- Only plugins released from this repository may be marked `"official": true`. Official plugins are never listed in `main`'s `index.json`: the publish workflow adds them from `plugins/`. To publish new plugin code, bump its version in `package.json`.
+- Only the publish workflow writes the `index` branch. Never read, print or copy `INDEX_SIGNING_KEY`; only that workflow uses it.
 - Templates, the SDK, `internal/` packages and repository docs stay institution-neutral. An institution or course platform is named only inside its own source plugin directory (`plugins/<id>/`) and that plugin's index entry and README.
 - Institution source plugins never ship credentials, test accounts or captured sessions; sign-in state lives only in the daemon's vault.
 - Mirrors receive GET requests only; never put credentials, tokens or private URLs into anything fetched through a mirror.
