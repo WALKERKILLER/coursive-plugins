@@ -6,6 +6,7 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/cookiejar"
@@ -13,6 +14,7 @@ import (
 	"net/url"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestVPNHostMatchesKnownGateway(t *testing.T) {
@@ -30,7 +32,7 @@ func TestVPNHostMatchesKnownGateway(t *testing.T) {
 }
 
 // fakeUIS plays UIS and a service that trusts its tickets.
-func fakeUIS(t *testing.T, password string) (idp, svc *httptest.Server) {
+func fakeUIS(t *testing.T, password string, secondFactor bool) (idp, svc *httptest.Server) {
 	key, _ := rsa.GenerateKey(rand.Reader, 2048)
 	der, _ := x509.MarshalPKIXPublicKey(&key.PublicKey)
 	mux := http.NewServeMux()
@@ -67,15 +69,40 @@ func fakeUIS(t *testing.T, password string) (idp, svc *httptest.Server) {
 	})
 	mux.HandleFunc("/idp/authn/authExecute", func(w http.ResponseWriter, r *http.Request) {
 		var in struct {
-			AuthChainCode string            `json:"authChainCode"`
-			RequestType   string            `json:"requestType"`
-			AuthPara      map[string]string `json:"authPara"`
+			AuthModuleCode string            `json:"authModuleCode"`
+			RequestNumber  string            `json:"requestNumber"`
+			Entity         string            `json:"entityId"`
+			Lck            string            `json:"lck"`
+			AuthChainCode  string            `json:"authChainCode"`
+			RequestType    string            `json:"requestType"`
+			AuthPara       map[string]string `json:"authPara"`
 		}
 		json.NewDecoder(r.Body).Decode(&in)
+		if in.AuthModuleCode == "userAndOtp" {
+			if !secondFactor || in.RequestNumber != "req" || in.AuthChainCode != "C2" || in.Entity != svc.URL || in.Lck != "L+1" || in.RequestType != "chain_type" || in.AuthPara["loginName"] != "canonical" || len(in.AuthPara) != 2 {
+				t.Error("incorrect second-factor context")
+				http.Error(w, "unexpected OTP request", 400)
+				return
+			}
+			now := time.Now()
+			key := []byte("12345678901234567890")
+			code := in.AuthPara["otpCode"]
+			if code != totpCode(key, now) && code != totpCode(key, now.Add(-30*time.Second)) {
+				t.Error("incorrect OTP")
+				http.Error(w, "invalid OTP", 400)
+				return
+			}
+			w.Write([]byte(`{"code":"200","loginToken":"T1"}`))
+			return
+		}
 		ct, _ := base64.StdEncoding.DecodeString(in.AuthPara["password"])
 		pw, err := rsa.DecryptPKCS1v15(nil, key, ct)
 		if err != nil || string(pw) != password || in.AuthChainCode != "C1" || in.RequestType != "chain_type" || in.AuthPara["loginName"] != "20300" {
 			w.Write([]byte(`{"code":"500","message":"用户名或密码错误"}`))
+			return
+		}
+		if secondFactor {
+			w.Write([]byte(`{"code":200,"second":true,"moduleCodes":["userAndOtp"],"requestNumber":"req","authChainCode":"C2","userName":"canonical"}`))
 			return
 		}
 		w.Write([]byte(`{"code":"200","loginToken":"T1"}`))
@@ -94,7 +121,7 @@ func fakeUIS(t *testing.T, password string) (idp, svc *httptest.Server) {
 func client() *http.Client { j, _ := cookiejar.New(nil); return &http.Client{Jar: j} }
 
 func TestUISLogin(t *testing.T) {
-	idp, svc := fakeUIS(t, "secret")
+	idp, svc := fakeUIS(t, "secret", false)
 	hc := client()
 	u := &uis{base: idp.URL, hc: hc}
 	if err := u.login(t.Context(), svc.URL+"/login/cas", "20300", "secret"); err != nil {
@@ -110,6 +137,22 @@ func TestUISLogin(t *testing.T) {
 	}
 	if err := (&uis{base: idp.URL, hc: client()}).login(t.Context(), svc.URL+"/login/cas", "20300", ""); err != errNeedsPassword {
 		t.Fatalf("want errNeedsPassword, got %v", err)
+	}
+}
+
+func TestUISSecondFactorLogin(t *testing.T) {
+	idp, svc := fakeUIS(t, "secret", true)
+	u := &uis{base: idp.URL, hc: client()}
+	if err := u.login(t.Context(), svc.URL+"/login/cas", "20300", "secret"); !errors.Is(err, errSecondFactor) {
+		t.Fatalf("legacy session without bound key: %v", err)
+	}
+	u.totpSecret = "gezdgnbv gy3tqojq gezdgnbv gy3tqojq"
+	if err := u.login(t.Context(), svc.URL+"/login/cas", "20300", "secret"); err != nil {
+		t.Fatal(err)
+	}
+	target, _ := url.Parse(svc.URL)
+	if len(u.hc.Jar.Cookies(target)) != 1 {
+		t.Fatal("service did not accept the MFA ticket")
 	}
 }
 

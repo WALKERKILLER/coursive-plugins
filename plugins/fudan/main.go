@@ -28,7 +28,10 @@ const (
 
 func main() {
 	if err := provider.Serve(func(h *provider.Host) provider.Handler {
-		return school.Handler(newSource(h))
+		remember := true
+		return school.Handler(newSource(h), provider.Field{
+			Key: "totp_secret", Title: "UIS 动态口令绑定密钥（Base32）", Kind: "password", Remember: &remember,
+		})
 	}); err != nil {
 		log.Fatal(err)
 	}
@@ -43,6 +46,9 @@ type source struct {
 	expired  bool
 	renewing chan struct{}
 	renewErr error
+
+	passwordMu sync.Mutex // serializes automatic password exchanges
+	factorErr  error      // a rejected second factor needs an explicit sign-in
 }
 
 func newSource(h *provider.Host) *source {
@@ -88,11 +94,18 @@ func (src *source) Status(ctx context.Context) provider.Auth {
 	return provider.Auth{State: provider.SignedOut}
 }
 
-func (src *source) SignIn(ctx context.Context, username, password string) (provider.Auth, error) {
+func (src *source) SignIn(ctx context.Context, fields map[string]string) (provider.Auth, error) {
+	username, password, secret := fields["username"], fields["password"], fields["totp_secret"]
+	if secret != "" {
+		if _, err := totpKey(secret); err != nil {
+			return provider.Auth{}, provider.Errorf(provider.KindInvalid, "无法登录：%v", err)
+		}
+	}
+	src.s.Load(ctx)
 	src.s.Jar.Reset()
 	src.plat.Reset()
-	if err := src.signInICourse(ctx, username, password); err != nil {
-		if errors.Is(err, errBadCredentials) {
+	if err := src.signInICourse(ctx, username, password, secret); err != nil {
+		if errors.Is(err, errBadCredentials) || errors.Is(err, errSecondFactor) {
 			return provider.Auth{}, provider.Errorf(provider.KindInvalid, "无法登录：%v", err)
 		}
 		return provider.Auth{}, provider.Errorf(provider.KindUnavailable, "无法登录：%v", err)
@@ -100,12 +113,15 @@ func (src *source) SignIn(ctx context.Context, username, password string) (provi
 	src.mu.Lock()
 	src.expired = false
 	src.mu.Unlock()
+	src.passwordMu.Lock()
+	src.factorErr = nil
+	src.passwordMu.Unlock()
 	display := username
 	if u, err := src.plat.UserInfo(ctx); err == nil && u.Realname != "" {
 		display = u.Realname
 	}
 	if err := src.s.Update(ctx, func(s *school.Saved) {
-		*s = school.Saved{Username: username, Password: password, Display: display}
+		*s = school.Saved{Username: username, Password: password, Display: display, TOTPSecret: secret}
 	}); err != nil {
 		return provider.Auth{}, err
 	}
@@ -120,22 +136,25 @@ func (src *source) SignOut(ctx context.Context) error {
 	src.mu.Lock()
 	src.expired = false
 	src.mu.Unlock()
+	src.passwordMu.Lock()
+	src.factorErr = nil
+	src.passwordMu.Unlock()
 	return src.s.Clear(ctx)
 }
 
 // signInICourse signs in to WebVPN and then, through the gateway, to
 // iCourse, and checks that iCourse answers as the signed-in user. With an
 // empty password it succeeds only while the UIS session lasts.
-func (src *source) signInICourse(ctx context.Context, username, password string) error {
+func (src *source) signInICourse(ctx context.Context, username, password, secret string) error {
 	hc := src.s.HC
-	if err := (&uis{hc: hc}).login(ctx, webVPNBase+"/login?cas_login=true", username, password); err != nil {
+	if err := (&uis{hc: hc, totpSecret: secret}).login(ctx, webVPNBase+"/login?cas_login=true", username, password); err != nil {
 		return err
 	}
 	start, err := vpnURL(icourseBase + "/casapi/index.php?r=auth/login&school_login=1&tenant_code=" + tenantCode + "&forward=" + url.QueryEscape(icourseBase+"/"))
 	if err != nil {
 		return err
 	}
-	if err := (&uis{hc: hc, vpn: true, entity: icourseBase}).login(ctx, start, username, password); err != nil {
+	if err := (&uis{hc: hc, totpSecret: secret, vpn: true, entity: icourseBase}).login(ctx, start, username, password); err != nil {
 		return err
 	}
 	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, icourseBase+"/userapi/v1/infosimple", nil)
@@ -152,6 +171,24 @@ func (src *source) signInICourse(ctx context.Context, username, password string)
 		return errors.New("iCourse 没有接受这次登录，请稍后重试")
 	}
 	return nil
+}
+
+// Keep trying silent SSO, but stop replaying credentials after UIS rejects
+// the bound second factor. Explicit sign-in can supply a corrected secret.
+func (src *source) withSavedPassword(password string, login func(string) error) error {
+	if err := login(""); !errors.Is(err, errNeedsPassword) || password == "" {
+		return err
+	}
+	src.passwordMu.Lock()
+	defer src.passwordMu.Unlock()
+	if src.factorErr != nil {
+		return src.factorErr
+	}
+	err := login(password)
+	if errors.Is(err, errSecondFactor) {
+		src.factorErr = err
+	}
+	return err
 }
 
 // renew signs in again: the empty password first, which works while the
@@ -174,10 +211,9 @@ func (src *source) renew(ctx context.Context) error {
 	src.mu.Unlock()
 
 	saved := src.s.Load(ctx)
-	err := src.signInICourse(ctx, saved.Username, "")
-	if errors.Is(err, errNeedsPassword) && saved.Password != "" {
-		err = src.signInICourse(ctx, saved.Username, saved.Password)
-	}
+	err := src.withSavedPassword(saved.Password, func(password string) error {
+		return src.signInICourse(ctx, saved.Username, password, saved.TOTPSecret)
+	})
 	if err == nil {
 		src.s.Update(ctx, func(*school.Saved) {})
 	} else {
@@ -239,12 +275,11 @@ func (src *source) CanvasSignIn(ctx context.Context) error {
 	if saved.Username == "" {
 		return school.AuthRequired("无法打开 Canvas：请先在「来源」中登录")
 	}
-	u := &uis{hc: src.s.HC}
-	err := u.login(ctx, canvasBase+"/login/cas", saved.Username, "")
-	if errors.Is(err, errNeedsPassword) && saved.Password != "" {
-		err = u.login(ctx, canvasBase+"/login/cas", saved.Username, saved.Password)
-	}
-	if errors.Is(err, errNeedsPassword) || errors.Is(err, errBadCredentials) {
+	u := &uis{hc: src.s.HC, totpSecret: saved.TOTPSecret}
+	err := src.withSavedPassword(saved.Password, func(password string) error {
+		return u.login(ctx, canvasBase+"/login/cas", saved.Username, password)
+	})
+	if errors.Is(err, errNeedsPassword) || errors.Is(err, errBadCredentials) || errors.Is(err, errSecondFactor) {
 		return school.AuthRequired(fmt.Sprintf("无法打开 Canvas：%v。请在「来源」中重新登录", err))
 	}
 	if err != nil {
