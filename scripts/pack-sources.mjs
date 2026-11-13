@@ -17,6 +17,11 @@ import process from 'node:process';
 import { gzipSync } from 'node:zlib';
 
 const REPO = 'WALKERKILLER/coursive-plugins';
+// The daemon's source market installs a version whose engine matches its
+// source plugin API, 2.0.0 (spec 0025). A v1 manifest states that range as
+// coursive.engine; a v3 manifest states only the manifest API in
+// coursive.api, and its versions are listed against the same source plugin API.
+const SOURCE_ENGINE = '^2.0.0';
 const ICON_TYPES = { '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml' };
 const TARGETS = {
   'linux-x64': ['linux', 'amd64'],
@@ -113,7 +118,7 @@ for (const dir of (await readdir('plugins', { withFileTypes: true })).filter((d)
     categories: m.categories ?? ['source'],
     kinds: ['sources'],
     official: true,
-    versions: [{ version: pkg.version, engine: m.engine, published: new Date().toISOString().slice(0, 10), artifacts }],
+    versions: [{ version: pkg.version, engine: m.engine ?? SOURCE_ENGINE, published: new Date().toISOString().slice(0, 10), artifacts }],
   });
 }
 await writeFile(join(out, 'index.json'), `${JSON.stringify({ schemaVersion: 1, generatedAt: new Date().toISOString(), plugins }, null, 2)}\n`);
