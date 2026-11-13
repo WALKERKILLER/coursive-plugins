@@ -47,3 +47,37 @@ jobs:
       # Every source plugin must build and pack for every platform it lists,
       # and merge into a published index without releasing or signing.
       - run: mkdir "$RUNNER_TEMP/published" && node scripts/publish.mjs --into "$RUNNER_TEMP/published" --dry-run
+
+  manifests:
+    name: manifests (v3)
+    runs-on: ubuntu-latest
+    env:
+      # The Coursive commit whose v3 manifest rules (spec 0031) and source
+      # market (spec 0025) the manifests here are checked against. Bump it
+      # when either changes in Coursive.
+      COURSIVE_REF: f0b9cdf80864bf2a07bcf32b2b9aadaaf7805597
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+        with:
+          repository: WALKERKILLER/Coursive
+          ref: ${{ env.COURSIVE_REF }}
+          path: .coursive
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            agent/scripts/validate-plugin.mjs
+            agent/src/plugin-manifest.mjs
+            agent/src/plugins.mjs
+            daemon/internal/sources/market.go
+            daemon/internal/sources/protocol.go
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: node --check scripts/check-manifests.mjs
+      # Builds every declared executable, so --files can require it.
+      - run: node scripts/pack-sources.mjs --out "$RUNNER_TEMP/packed" --all
+      - run: node scripts/check-manifests.mjs --rules .coursive --files --index "$RUNNER_TEMP/packed/index.json"

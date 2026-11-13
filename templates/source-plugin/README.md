@@ -15,7 +15,13 @@ bin/
 └── provider-macos-x64
 ```
 
-`manifest.example.json` shows the `coursive` manifest of a source plugin.
+`manifest.example.json` shows the `coursive` manifest of a source plugin, in the v3 shape of the [plugin fabric contract](https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/0031-plugin-fabric-core.md):
+
+- `api` is the manifest API range, `^3.0.0`.
+- `runtime` holds one `process` component whose `entry` maps each platform key to its provider executable.
+- `contributes.sources` declares each source with its protocol version, the same executable map and the hosts it contacts, and the `source` permission grants it.
+
+The daemon picks an index version by its `engine`, matched against the source market API 2.0.0, so the index entry of a source plugin still lists `"engine": "^2.0.0"`. Check the manifest with `node <Coursive>/agent/scripts/validate-plugin.mjs <plugin-dir> --files --host 3.0.0` after building the executables.
 
 ## Icon
 

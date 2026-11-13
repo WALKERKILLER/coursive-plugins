@@ -4,7 +4,7 @@ This repository holds the Coursive plugin index, the mirror list and the officia
 
 ## Submitting a plugin
 
-1. Develop the plugin in your own public repository, starting from [templates/](templates/).
+1. Develop the plugin in your own public repository, starting from [templates/](templates/). Declare a v3 manifest (`coursive.api`, see the [v3 guide](https://github.com/WALKERKILLER/Coursive/blob/main/docs/plugin-v3-guide.md)) and check it with `node <Coursive>/agent/scripts/validate-plugin.mjs <plugin-dir> --files --host 3.0.0`. A v1 manifest (`coursive.engine`) still installs but is deprecated.
 2. Publish a GitHub release whose tag is the plugin version. Attach one `.tgz` for a platform-independent plugin, or one per platform key (`linux-x64`, `linux-arm64`, `windows-x64`, `macos-arm64`, `macos-x64`) for a source plugin.
 3. Add your entry to [index.json](index.json) in a pull request, keeping `plugins` sorted by `id`. Fill in each artifact's `size` and `sha256` (`sha256sum <file>`).
 4. Run `node scripts/validate.mjs --artifacts` and paste its output into the pull request.
@@ -23,7 +23,7 @@ After your pull request is merged, the publish workflow signs the index and publ
 
 ## Official plugins
 
-Official plugins live under [plugins/](plugins/), one directory per plugin. The publish workflow releases each new version as `<id>-v<version>` and adds it to the signed index; `main`'s `index.json` never lists them. Only entries released from this repository may set `"official": true`.
+Official plugins live under [plugins/](plugins/), one directory per plugin, with v3 manifests that CI checks with [scripts/check-manifests.mjs](scripts/check-manifests.mjs). The publish workflow releases each new version as `<id>-v<version>` and adds it to the signed index; `main`'s `index.json` never lists them. Only entries released from this repository may set `"official": true`.
 
 ## Mirrors
 

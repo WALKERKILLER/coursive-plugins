@@ -23,6 +23,7 @@
 - **[sdk/provider](sdk/provider)**：来源插件实现提供者协议所用的 Go SDK。
 - **[templates/](templates/)**：助手插件和来源插件的起步模板。
 - **[scripts/validate.mjs](scripts/validate.mjs)**：CI 对每次变更运行的检查。
+- **[scripts/check-manifests.mjs](scripts/check-manifests.mjs)**：按 Coursive 的 [v3 清单规则](https://github.com/WALKERKILLER/Coursive/blob/main/docs/plugin-v3-guide.md)和守护进程的来源市场检查官方插件与模板的清单。
 
 ## 插件类型
 
@@ -58,7 +59,10 @@ CI 会下载每个新安装包，并核对大小和哈希。维护者审查代�
 ```sh
 node scripts/validate.mjs              # 检查格式和规则
 node scripts/validate.mjs --artifacts  # 同时下载并校验每个安装包
+node scripts/check-manifests.mjs --rules ../Coursive  # 对照 Coursive 检出检查清单
 ```
+
+在自己仓库开发的插件，用 Coursive 的校验器检查清单：`node <Coursive>/agent/scripts/validate-plugin.mjs <插件目录> --files --host 3.0.0`。
 
 ## 安全
 
