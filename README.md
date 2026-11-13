@@ -1,19 +1,44 @@
+<a id="readme-top"></a>
+
+<div align="right">
+<strong>English</strong> | <a href="README.zh-CN.md">简体中文</a>
+</div>
+
 <div align="center">
 
-# Coursive Plugins
+<h1>Coursive Plugins</h1>
 
-**The plugin index, the download mirror list and the official plugins for [Coursive](https://github.com/WALKERKILLER/Coursive).**
+<p><strong>The plugin index, mirror list and official plugins for <a href="https://github.com/WALKERKILLER/Coursive">Coursive</a></strong><br />
+<sub>A signed index the app trusts, mirrors that only carry bytes, and the source plugins that sign in to course platforms</sub></p>
 
-[![CI](https://github.com/WALKERKILLER/coursive-plugins/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/WALKERKILLER/coursive-plugins/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-2f7cf6.svg)](LICENSE)
-[![Index schema](https://img.shields.io/badge/index%20schema-v1-44adfe.svg)](index.json)
+<p>
+<a href="https://github.com/WALKERKILLER/coursive-plugins/stargazers"><img height="22" src="https://m3-markdown-badges.vercel.app/stars/3/3/WALKERKILLER/coursive-plugins" alt="Stars" /></a>
+&nbsp;
+<a href="https://go.dev"><img height="22" src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Go/go3.svg" alt="Go" /></a>
+&nbsp;
+<a href="https://nodejs.org"><img height="22" src="https://ziadoua.github.io/m3-Markdown-Badges/badges/NodeJS/nodejs3.svg" alt="Node.js" /></a>
+&nbsp;
+<a href="index.json"><img height="22" src="https://ziadoua.github.io/m3-Markdown-Badges/badges/JSON/json3.svg" alt="JSON" /></a>
+&nbsp;
+<a href="LICENSE"><img height="22" src="https://ziadoua.github.io/m3-Markdown-Badges/badges/LicenceMIT/licencemit3.svg" alt="MIT" /></a>
+</p>
 
-*[简体中文](README.zh-CN.md) · [Marketplace contract](https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/0025-plugin-marketplace.md) · [Source-provider contract](https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/0024-source-provider-plugins.md) · [Contributing](CONTRIBUTING.md)*
+<p>
+<img height="22" src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Linux/linux3.svg" alt="Linux" />
+&nbsp;
+<img height="22" src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Windows/windows3.svg" alt="Windows" />
+&nbsp;
+<img height="22" src="https://ziadoua.github.io/m3-Markdown-Badges/badges/macOS/macos3.svg" alt="macOS" />
+</p>
+
+<p>
+<sub><em>Read the <a href="https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/0025-plugin-marketplace.md">Marketplace contract</a> · Build on the <a href="https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/0024-source-provider-plugins.md">Source-provider contract</a> · Follow the <a href="https://github.com/WALKERKILLER/Coursive/blob/main/docs/plugin-v3-guide.md">v3 guide</a> · Check <a href="https://github.com/WALKERKILLER/coursive-plugins/actions/workflows/ci.yml">CI</a></em></sub>
+</p>
+<br />
 
 </div>
 
-> [!NOTE]
-> The marketplace contract is approved in the Coursive repository as spec 0025. Coursive reads the signed index from the [`index`](https://github.com/WALKERKILLER/coursive-plugins/tree/index) branch, which the publish workflow writes after every merge.
+> **Things to note**: the marketplace contract is approved in the Coursive repository as spec 0025. Coursive reads the signed index from the [`index`](https://github.com/WALKERKILLER/coursive-plugins/tree/index) branch, which the publish workflow writes after every merge.
 
 ## What Lives Here
 
@@ -64,18 +89,25 @@ node scripts/check-manifests.mjs --rules ../Coursive  # manifests, against a Cou
 
 A plugin in its own repository checks its manifest with Coursive's validator: `node <Coursive>/agent/scripts/validate-plugin.mjs <plugin-dir> --files --host 3.0.0`.
 
-## Security
+## Contributing
 
-Report vulnerabilities in the index, the mirror list or an official plugin privately, as described in [SECURITY.md](SECURITY.md).
+Read [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md) first; human and AI contributors follow the same rules.
 
-## License
+## Community
+
+**Feedback:**
+
+- Report a problem with a listed plugin with the **Plugin problem** form and report a dead or misbehaving mirror with the **Mirror report** form in [Issues](https://github.com/WALKERKILLER/coursive-plugins/issues/new/choose).
+- Report vulnerabilities in the index, the mirror list or an official plugin privately, as described in [SECURITY.md](SECURITY.md).
+
+**Built With:**
+
+- [Go](https://go.dev) for the provider SDK and the source plugins, and [Node.js](https://nodejs.org) for the index scripts.
 
 The index, scripts and official plugins are released under the [MIT License](LICENSE). Third-party plugins listed in the index keep their own licenses.
 
 ---
 
-<div align="center">
-
-[↑ Back to top](#coursive-plugins)
-
+<div align="right">
+<a href="#readme-top">↑ Back to top</a>
 </div>

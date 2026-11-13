@@ -1,19 +1,44 @@
+<a id="readme-top"></a>
+
+<div align="right">
+<a href="README.md">English</a> | <strong>简体中文</strong>
+</div>
+
 <div align="center">
 
-# Coursive Plugins
+<h1>Coursive Plugins</h1>
 
-**[Coursive](https://github.com/WALKERKILLER/Coursive) 的插件索引、下载镜像列表和官方插件。**
+<p><strong><a href="https://github.com/WALKERKILLER/Coursive">Coursive</a> 的插件索引、镜像列表和官方插件</strong><br />
+<sub>应用信任的签名索引，只负责传输的镜像，以及登录课程平台的来源插件</sub></p>
 
-[![CI](https://github.com/WALKERKILLER/coursive-plugins/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/WALKERKILLER/coursive-plugins/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-2f7cf6.svg)](LICENSE)
-[![Index schema](https://img.shields.io/badge/index%20schema-v1-44adfe.svg)](index.json)
+<p>
+<a href="https://github.com/WALKERKILLER/coursive-plugins/stargazers"><img height="22" src="https://m3-markdown-badges.vercel.app/stars/3/3/WALKERKILLER/coursive-plugins" alt="Stars" /></a>
+&nbsp;
+<a href="https://go.dev"><img height="22" src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Go/go3.svg" alt="Go" /></a>
+&nbsp;
+<a href="https://nodejs.org"><img height="22" src="https://ziadoua.github.io/m3-Markdown-Badges/badges/NodeJS/nodejs3.svg" alt="Node.js" /></a>
+&nbsp;
+<a href="index.json"><img height="22" src="https://ziadoua.github.io/m3-Markdown-Badges/badges/JSON/json3.svg" alt="JSON" /></a>
+&nbsp;
+<a href="LICENSE"><img height="22" src="https://ziadoua.github.io/m3-Markdown-Badges/badges/LicenceMIT/licencemit3.svg" alt="MIT" /></a>
+</p>
 
-*[English](README.md) · [插件市场契约](https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/0025-plugin-marketplace.md) · [来源插件契约](https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/0024-source-provider-plugins.md) · [参与贡献](CONTRIBUTING.md)*
+<p>
+<img height="22" src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Linux/linux3.svg" alt="Linux" />
+&nbsp;
+<img height="22" src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Windows/windows3.svg" alt="Windows" />
+&nbsp;
+<img height="22" src="https://ziadoua.github.io/m3-Markdown-Badges/badges/macOS/macos3.svg" alt="macOS" />
+</p>
+
+<p>
+<sub><em>阅读<a href="https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/0025-plugin-marketplace.md">插件市场契约</a> · 基于<a href="https://github.com/WALKERKILLER/Coursive/blob/main/docs/specs/0024-source-provider-plugins.md">来源插件契约</a>开发 · 参考 <a href="https://github.com/WALKERKILLER/Coursive/blob/main/docs/plugin-v3-guide.md">v3 指南</a> · 查看 <a href="https://github.com/WALKERKILLER/coursive-plugins/actions/workflows/ci.yml">CI</a></em></sub>
+</p>
+<br />
 
 </div>
 
-> [!NOTE]
-> 插件市场契约已在 Coursive 仓库中批准，编号为 0025。Coursive 从 [`index`](https://github.com/WALKERKILLER/coursive-plugins/tree/index) 分支读取签名索引，每次合并后由发布工作流写入。
+> **注意**：插件市场契约已在 Coursive 仓库中批准，编号为 0025。Coursive 从 [`index`](https://github.com/WALKERKILLER/coursive-plugins/tree/index) 分支读取签名索引，每次合并后由发布工作流写入。
 
 ## 仓库内容
 
@@ -64,18 +89,25 @@ node scripts/check-manifests.mjs --rules ../Coursive  # 对照 Coursive 检出�
 
 在自己仓库开发的插件，用 Coursive 的校验器检查清单：`node <Coursive>/agent/scripts/validate-plugin.mjs <插件目录> --files --host 3.0.0`。
 
-## 安全
+## 参与贡献
 
-索引、镜像列表或官方插件中的安全漏洞，请按 [SECURITY.md](SECURITY.md) 私下报告。
+请先阅读 [CONTRIBUTING.md](CONTRIBUTING.md) 和 [AGENTS.md](AGENTS.md)；人类贡献者和 AI 贡献者遵循同样的规则。
 
-## 许可证
+## 社区
+
+**反馈**：
+
+- 在 [Issues](https://github.com/WALKERKILLER/coursive-plugins/issues/new/choose) 用 **Plugin problem** 表单报告索引中插件的问题，用 **Mirror report** 表单报告失效或异常的镜像。
+- 索引、镜像列表或官方插件中的安全漏洞，请按 [SECURITY.md](SECURITY.md) 私下报告。
+
+**技术栈**：
+
+- 提供者 SDK 和来源插件使用 [Go](https://go.dev)，索引脚本使用 [Node.js](https://nodejs.org)。
 
 索引、脚本和官方插件以 [MIT 许可证](LICENSE)发布。索引中的第三方插件沿用各自的许可证。
 
 ---
 
-<div align="center">
-
-[↑ 回到顶部](#coursive-plugins)
-
+<div align="right">
+<a href="#readme-top">↑ 回到顶部</a>
 </div>
