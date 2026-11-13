@@ -12,8 +12,8 @@
 //            after pack-sources.mjs has built them
 //   --index  an index written by pack-sources.mjs: every source plugin version
 //            must carry an engine the daemon's source market accepts
-// A manifest without coursive.api is v1: deprecated but still installable, so
-// it is reported as a warning and not held to the v3 rules.
+// A manifest without coursive.api is v1. v1 is deprecated (it still installs),
+// and the plugins and templates here declare v3, so a v1 manifest fails.
 // Zero dependencies; Node >= 22.
 import { readdir, readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
@@ -44,7 +44,6 @@ const PLATFORMS = new Set(['linux-x64', 'linux-arm64', 'windows-x64', 'macos-arm
 const MANIFESTS = ['package.json', 'manifest.example.json'];
 
 const errors = [];
-const warnings = [];
 const list = (v) => (Array.isArray(v) ? v : []);
 const pairs = (map) => Object.entries(map && typeof map === 'object' ? map : {}).map(([k, v]) => `${k}=${v}`);
 
@@ -77,7 +76,7 @@ for (const base of ['plugins', 'templates']) {
       const where = join(base, dir, name);
       const pkg = JSON.parse(await readFile(where, 'utf8'));
       if (!pkg.coursive?.api) {
-        warnings.push(`${where}: v1 manifest; it still installs, but v1 is deprecated: replace coursive.engine with coursive.api (decision 0035)`);
+        errors.push(`${where}: v1 manifest; v1 is deprecated, so declare v3: replace coursive.engine with coursive.api (decision 0035)`);
         continue;
       }
       const report = await validate(where, { files: args.includes('--files') && base === 'plugins', host: HOST_API });
@@ -96,7 +95,6 @@ if (indexFile) {
   }
 }
 
-for (const w of warnings) console.warn(`check-manifests: warning: ${w}`);
 if (errors.length) {
   for (const e of errors) console.error(`check-manifests: ${e}`);
   process.exit(1);
