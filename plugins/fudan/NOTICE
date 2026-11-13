@@ -5,3 +5,7 @@ domain there, but the emblem is a trademark of Fudan University. It is used
 only to identify this plugin, which connects to the university's own
 services; it does not imply endorsement. Its single CSS class was inlined as
 a fill attribute so that SVG renderers without CSS draw it.
+
+The UIS second-factor protocol is documented by Fudan_iCourse_Subscriber
+(https://github.com/LeafCreeper/Fudan_iCourse_Subscriber/pull/55).
+The Go implementation uses RFC 6238 and the Coursive provider protocol.

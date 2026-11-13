@@ -9,6 +9,7 @@ import (
 	"errors"
 	"net"
 	"net/http"
+	"slices"
 	"sync"
 	"time"
 
@@ -20,11 +21,12 @@ import (
 
 // Saved is the session kept in the daemon's vault.
 type Saved struct {
-	Username string `json:"username,omitempty"`
-	Password string `json:"password,omitempty"`
-	Display  string `json:"display,omitempty"`
-	Token    string `json:"token,omitempty"`
-	Cookies  string `json:"cookies,omitempty"`
+	Username   string `json:"username,omitempty"`
+	Password   string `json:"password,omitempty"`
+	TOTPSecret string `json:"totp_secret,omitempty"`
+	Display    string `json:"display,omitempty"`
+	Token      string `json:"token,omitempty"`
+	Cookies    string `json:"cookies,omitempty"`
 }
 
 const vaultKey = "session"
@@ -96,7 +98,7 @@ func (s *Session) Clear(ctx context.Context) error {
 type Source interface {
 	// Status reports the sign-in state without network requests.
 	Status(ctx context.Context) provider.Auth
-	SignIn(ctx context.Context, username, password string) (provider.Auth, error)
+	SignIn(ctx context.Context, fields map[string]string) (provider.Auth, error)
 	Answer(ctx context.Context, challenge, answer string) (provider.Auth, error)
 	SignOut(ctx context.Context) error
 	// Platform is the lecture platform's client, signed in through Do.
@@ -119,7 +121,8 @@ var Fields = func() []provider.Field {
 func AuthRequired(msg string) error { return provider.Errorf(provider.KindAuthRequired, "%s", msg) }
 
 // Handler serves every protocol method for src.
-func Handler(src Source) provider.Handler {
+func Handler(src Source, additionalFields ...provider.Field) provider.Handler {
+	fields := slices.Concat(Fields, additionalFields)
 	var canvasMu sync.Mutex
 	canvasReady := false
 	// withCanvas opens the Canvas session on first use and once more when
@@ -169,7 +172,7 @@ func Handler(src Source) provider.Handler {
 		case "initialize":
 			in := provider.Init{Protocol: provider.Protocol,
 				Capabilities: []string{provider.CapSlides, provider.CapCourseware, provider.CapLMS}}
-			in.SignIn.Fields = Fields
+			in.SignIn.Fields = fields
 			return in, nil
 		case "auth.status":
 			return src.Status(ctx), nil
@@ -180,7 +183,7 @@ func Handler(src Source) provider.Handler {
 			canvasMu.Lock()
 			canvasReady = false
 			canvasMu.Unlock()
-			return src.SignIn(ctx, p.Fields["username"], p.Fields["password"])
+			return src.SignIn(ctx, p.Fields)
 		case "auth.answer":
 			return src.Answer(ctx, p.Challenge, p.Answer)
 		case "auth.signOut":

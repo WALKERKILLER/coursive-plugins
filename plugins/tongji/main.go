@@ -82,10 +82,10 @@ func (src *source) Status(ctx context.Context) provider.Auth {
 	return provider.Auth{State: provider.SignedOut}
 }
 
-func (src *source) SignIn(ctx context.Context, username, password string) (provider.Auth, error) {
+func (src *source) SignIn(ctx context.Context, fields map[string]string) (provider.Auth, error) {
 	src.s.Jar.Reset()
 	src.plat.Reset()
-	return src.finish(ctx, username, password, "")
+	return src.finish(ctx, fields["username"], fields["password"], "")
 }
 
 func (src *source) Answer(ctx context.Context, id, answer string) (provider.Auth, error) {

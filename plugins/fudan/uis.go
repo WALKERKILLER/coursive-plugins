@@ -16,6 +16,7 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/walkerkiller/coursive-plugins/internal/courseapi"
 )
@@ -42,7 +43,8 @@ type uis struct {
 	// gateway session must exist already.
 	vpn bool
 	// entity is the service's entity id when the sign-in address lacks one.
-	entity string
+	entity     string
+	totpSecret string
 }
 
 func (u *uis) origin() string {
@@ -167,22 +169,29 @@ func (u *uis) login(ctx context.Context, start, username, password string) error
 	}
 
 	// 4. Submit the credentials for a login token.
-	var exec struct {
-		Code       any    `json:"code"`
-		Message    string `json:"message"`
-		LoginToken string `json:"loginToken"`
-	}
+	var exec authResult
 	if err := u.postJSON(ctx, "/idp/authn/authExecute", map[string]any{
 		"authModuleCode": "userAndPwd", "authChainCode": chain, "entityId": entity, "requestType": methods.RequestType, "lck": lck,
 		"authPara": map[string]string{"loginName": username, "password": enc, "verifyCode": ""},
 	}, &exec); err != nil {
 		return err
 	}
-	if fmt.Sprint(exec.Code) != "200" || exec.LoginToken == "" {
+	if fmt.Sprint(exec.Code) != "200" {
 		if exec.Message != "" {
 			return fmt.Errorf("%w：%s", errBadCredentials, exec.Message)
 		}
 		return errBadCredentials
+	}
+
+	if exec.Second {
+		token, err := u.completeTOTP(ctx, exec, username, entity, methods.RequestType, lck, time.Now())
+		if err != nil {
+			return err
+		}
+		exec.LoginToken = token
+	}
+	if exec.LoginToken == "" {
+		return errors.New("统一身份认证没有返回登录令牌")
 	}
 
 	// 5. Trade the token for the service ticket address.
