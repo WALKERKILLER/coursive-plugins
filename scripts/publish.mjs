@@ -67,7 +67,9 @@ for (const p of packed.plugins) {
 }
 plugins.sort((a, b) => a.id.localeCompare(b.id));
 
-const same = JSON.stringify(plugins) === JSON.stringify(published.plugins);
+// published.plugins shares its entries with plugins, which the loop above
+// updated in place, so compare against the index as it was read.
+const same = JSON.stringify(plugins) === JSON.stringify(before ? JSON.parse(before).plugins : []);
 const signed = before !== '' && (() => {
   try { return verifyMinisign(Buffer.from(before), readFileSync(join(into, 'index.json.sig'), 'utf8'), readFileSync('minisign.pub', 'utf8')); } catch { return false; }
 })();
