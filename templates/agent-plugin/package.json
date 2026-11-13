@@ -10,8 +10,8 @@
     "summary": "While on, the assistant explains every concept in plain words first",
     "icon": "extension",
     "categories": ["tutor"],
-    "engine": "^2.0.0",
-    "agent": "./agent.mjs",
+    "api": "^3.0.0",
+    "runtime": [{ "kind": "pi", "entry": "agent.mjs" }],
     "permissions": [],
     "settings": {
       "type": "object",

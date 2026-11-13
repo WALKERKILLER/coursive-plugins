@@ -23,6 +23,7 @@
 - **[sdk/provider](sdk/provider)**: the Go SDK that source plugins use to speak the provider protocol.
 - **[templates/](templates/)**: starting points for an agent plugin and a source plugin.
 - **[scripts/validate.mjs](scripts/validate.mjs)**: the checks CI runs on every change.
+- **[scripts/check-manifests.mjs](scripts/check-manifests.mjs)**: checks the manifests of the official plugins and templates against Coursive's [v3 manifest rules](https://github.com/WALKERKILLER/Coursive/blob/main/docs/plugin-v3-guide.md) and the daemon's source market.
 
 ## Plugin Kinds
 
@@ -58,7 +59,10 @@ CI downloads every new artifact and checks its size and hash. A maintainer revie
 ```sh
 node scripts/validate.mjs              # formats and rules
 node scripts/validate.mjs --artifacts  # also download and verify every artifact
+node scripts/check-manifests.mjs --rules ../Coursive  # manifests, against a Coursive checkout
 ```
+
+A plugin in its own repository checks its manifest with Coursive's validator: `node <Coursive>/agent/scripts/validate-plugin.mjs <plugin-dir> --files --host 3.0.0`.
 
 ## Security
 
