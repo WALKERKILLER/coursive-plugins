@@ -1,4 +1,4 @@
 untrusted comment: signature from the coursive-plugins index key
-RWRrcl0UlUhfrgEelJI+aFEHeu7PfUo28J/ZqOxRjSUSRXlZQgk+Uq2uiPSIUhm91T8QG0tvQ6Qn9vcOAx27DxaUmtUoag1RiQM=
-trusted comment: timestamp:1794000929	file:index.json
-rVyuUeFDGdG+NFhDrUddMBQuzCCL4N+O9VFhhK461pSxnNWpUSIiNY3L/HiRg+RUSTyvdMhY1VWIFvLlOGLbDA==
+RWRrcl0UlUhfrtE3EB14LZVs0JS9dBZOj09wrBtgT9BjtxK2wikWOuO2X0g2SRnVAhEZD8lM3QD2n0BlNDTcWdpjEMxRfis50wM=
+trusted comment: timestamp:1794537815	file:index.json
+TTFhV33m/8CcWf331+cbpFB075xGNsnBNEVjiepKyeP/Bi2m1uEobzW/n62B9IwR7P8DSWr17PKOoJfNa2zABQ==

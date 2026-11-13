@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-06T21:35:29.091Z",
+  "generatedAt": "2026-11-13T02:43:35.995Z",
   "plugins": [
     {
       "id": "fudan",
@@ -17,6 +17,43 @@
       ],
       "official": true,
       "versions": [
+        {
+          "version": "0.1.1",
+          "engine": "^2.0.0",
+          "published": "2026-11-13",
+          "artifacts": [
+            {
+              "platform": "linux-x64",
+              "url": "https://github.com/WALKERKILLER/coursive-plugins/releases/download/fudan-v0.1.1/fudan-0.1.1-linux-x64.tgz",
+              "sha256": "e2809feaae276d26592a2a432f08c22f3cdf46a1f80302774beebba154b138ce",
+              "size": 3103445
+            },
+            {
+              "platform": "linux-arm64",
+              "url": "https://github.com/WALKERKILLER/coursive-plugins/releases/download/fudan-v0.1.1/fudan-0.1.1-linux-arm64.tgz",
+              "sha256": "f54ee4d01b6d6588152b6d07a93d04dc5510c34df7d9ca7257d105cbbeae046e",
+              "size": 2813981
+            },
+            {
+              "platform": "windows-x64",
+              "url": "https://github.com/WALKERKILLER/coursive-plugins/releases/download/fudan-v0.1.1/fudan-0.1.1-windows-x64.tgz",
+              "sha256": "ac6478b4b0f90205beef1aa0de24f6ff8fd034cd530db8d45ee6a0418f800e32",
+              "size": 3197351
+            },
+            {
+              "platform": "macos-arm64",
+              "url": "https://github.com/WALKERKILLER/coursive-plugins/releases/download/fudan-v0.1.1/fudan-0.1.1-macos-arm64.tgz",
+              "sha256": "b10000f74eb9ca5ca9f40f1cc3ad04e154c5b318e4fa1bd9d4085ba9b5cc2f93",
+              "size": 2921883
+            },
+            {
+              "platform": "macos-x64",
+              "url": "https://github.com/WALKERKILLER/coursive-plugins/releases/download/fudan-v0.1.1/fudan-0.1.1-macos-x64.tgz",
+              "sha256": "4b935b3dd04a6ff4523ee71c44fffe27f3856856d11e659b86ed1943bfa09852",
+              "size": 3160319
+            }
+          ]
+        },
         {
           "version": "0.1.0",
           "engine": "^2.0.0",
@@ -71,6 +108,43 @@
       ],
       "official": true,
       "versions": [
+        {
+          "version": "0.1.1",
+          "engine": "^2.0.0",
+          "published": "2026-11-13",
+          "artifacts": [
+            {
+              "platform": "linux-x64",
+              "url": "https://github.com/WALKERKILLER/coursive-plugins/releases/download/tongji-v0.1.1/tongji-0.1.1-linux-x64.tgz",
+              "sha256": "e3987c595476fd72f4aff610a90f94bcf72d55461afecf23b1564ecd3ef00e85",
+              "size": 3185790
+            },
+            {
+              "platform": "linux-arm64",
+              "url": "https://github.com/WALKERKILLER/coursive-plugins/releases/download/tongji-v0.1.1/tongji-0.1.1-linux-arm64.tgz",
+              "sha256": "65e1d34474fb717d578895f606cdc65d16983a3893ad1d27202edd06854b5e44",
+              "size": 2888593
+            },
+            {
+              "platform": "windows-x64",
+              "url": "https://github.com/WALKERKILLER/coursive-plugins/releases/download/tongji-v0.1.1/tongji-0.1.1-windows-x64.tgz",
+              "sha256": "22489b46bff3a8fcd1d737bbb373a814064cb998e87fae14663cf2deb7691436",
+              "size": 3277797
+            },
+            {
+              "platform": "macos-arm64",
+              "url": "https://github.com/WALKERKILLER/coursive-plugins/releases/download/tongji-v0.1.1/tongji-0.1.1-macos-arm64.tgz",
+              "sha256": "16e0aa6c6fb3107eaa4ff636d342cb60bc31cce3b525724dd1629b3bd8797e8d",
+              "size": 3001755
+            },
+            {
+              "platform": "macos-x64",
+              "url": "https://github.com/WALKERKILLER/coursive-plugins/releases/download/tongji-v0.1.1/tongji-0.1.1-macos-x64.tgz",
+              "sha256": "23ac9a69d8fd982135bdd99bb110243e1923bcea17f39456c62d77c8beb8b669",
+              "size": 3243296
+            }
+          ]
+        },
         {
           "version": "0.1.0",
           "engine": "^2.0.0",
