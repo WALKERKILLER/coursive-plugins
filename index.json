@@ -1,7 +1,40 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-13T02:43:35.995Z",
+  "generatedAt": "2026-11-24T11:48:06.930Z",
   "plugins": [
+    {
+      "id": "course-tutor",
+      "title": "课程伴学",
+      "summary": "按复习目标用当前课程资料讲解、提问和复测，在同一对话续学。",
+      "author": "kniphofia1",
+      "icon": "school",
+      "homepage": "https://github.com/kniphofia1/coursive-course-tutor",
+      "categories": [
+        "tutor",
+        "review"
+      ],
+      "kinds": [
+        "agent",
+        "skills",
+        "actions"
+      ],
+      "official": false,
+      "versions": [
+        {
+          "version": "0.1.0",
+          "engine": "^3.0.0",
+          "published": "2026-11-24",
+          "artifacts": [
+            {
+              "platform": "any",
+              "url": "https://github.com/kniphofia1/coursive-course-tutor/releases/download/v0.1.0/coursive-plugin-course-tutor-0.1.0.tgz",
+              "sha256": "d7a1132b964f9034c6c43f36c8d09521fe01255eb70ea2f89385019169341226",
+              "size": 10385
+            }
+          ]
+        }
+      ]
+    },
     {
       "id": "fudan",
       "title": "复旦大学",
